@@ -4,6 +4,7 @@ import cors from "cors";
 import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import { authRoutes } from "./modules/auth/auth.routes.js";
 
 export function createApp(): Application {
     const app = express();
@@ -24,6 +25,8 @@ export function createApp(): Application {
     app.get("/health", (_req: Request, res: Response) => {
         res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
     })
+
+    app.use("/api/auth", authRoutes);
 
     app.use((req: Request, res: Response) => {
         res.status(404).json({
