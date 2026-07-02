@@ -7,7 +7,7 @@ const envSchema = z.object({
     DIRECT_URL: z.string().min(1, "DIRECT_URL is required"),
     SUPABASE_URL: z.string().min(1, "SUPABASE_URL is required"),
     SUPABASE_ANON_KEY: z.string().min(1, "SUPABASE_ANON_KEY is required"),
-    CORS_ORIGIN: z.string().default(""),
+    CORS_ORIGIN: z.string().default("*"),
 });
 
 const parsed = envSchema.safeParse(process.env);
