@@ -1,5 +1,6 @@
 import { prisma } from "../../config/prisma.js";
-import type { TaskQueryInput } from "./tasks.schema.js";
+import { AppError } from "../../utils/errors.js";
+import type { CreateTaskInput, TaskQueryInput } from "./tasks.schema.js";
 
 export async function getTask(userId: string, query: TaskQueryInput) {
     const { page, limit, status } = query;
@@ -27,5 +28,47 @@ export async function getTask(userId: string, query: TaskQueryInput) {
             limit,
             totalPage: Math.ceil(total / limit)
         }
+    }
+}
+
+export async function createTask(userId: string, payload: CreateTaskInput) {
+    const task = await prisma.task.create({
+        data: {
+            title: payload.title,
+            description: payload.description ?? null,
+            context: payload.context,
+            priority: payload.priority,
+            status: payload.status,
+            dueDate: payload.dueDate ?? null,
+            dueTime: payload.dueTime ?? null,
+            tags: payload.tags,
+            userId,
+        },
+    });
+
+    return task;
+}
+
+export async function getTaskById(userId: string, taskId: string) {
+    const task = await prisma.task.findFirst({
+        where: {
+            id: taskId, userId
+        },
+    });
+
+    if (!task) {
+        throw new AppError(404, "TASK_NOT_FOUND", "Task not found");
+    }
+
+    return task;
+}
+
+export async function deleteTask(userId: string, taskId: string): Promise<void> {
+    const { count } = await prisma.task.deleteMany({
+        where: { id: taskId, userId },
+    });
+
+    if (count === 0) {
+        throw new AppError(404, "TASK_NOT_FOUND", "Task not found");
     }
 }
