@@ -13,6 +13,14 @@ export async function getTask(userId: string, query: TaskQueryInput) {
     const [tasks, total] = await Promise.all([
         prisma.task.findMany({
             where,
+            select: {
+                id: true,
+                title: true,
+                context: true,
+                priority: true,
+                status: true,
+                dueDate: true,
+            },
             orderBy: { createdAt: 'desc' },
             skip: (page - 1) * limit,
             take: limit
