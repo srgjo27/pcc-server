@@ -5,6 +5,7 @@ import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authRoutes } from "./modules/auth/auth.routes.js";
+import { taskRoutes } from "./modules/tasks/task.routes.js";
 
 export function createApp(): Application {
     const app = express();
@@ -27,6 +28,7 @@ export function createApp(): Application {
     })
 
     app.use("/api/auth", authRoutes);
+    app.use("/api/task", taskRoutes);
 
     app.use((req: Request, res: Response) => {
         res.status(404).json({
