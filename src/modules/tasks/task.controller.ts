@@ -21,7 +21,7 @@ export async function tasks(req: Request, res: Response): Promise<Response> {
 export async function create(req: Request, res: Response): Promise<Response> {
     const payload = createTaskSchema.parse(req.body);
 
-    const task = await createTask(req.user!.id, payload);;
+    const task = await createTask(req.user!.id, payload);
 
     return sendSuccess(res, task, "Successfully created the task", 201);
 }
