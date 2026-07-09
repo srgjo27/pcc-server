@@ -24,3 +24,7 @@ export const queryEventsSchema = z.object({
 });
 
 export type EventsQueryInput = z.infer<typeof queryEventsSchema>;
+
+export const updateEventSchema = createEventSchema.partial();
+
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;

@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 import { sendSuccess } from "../../utils/response.js";
-import { createEvent, deleteEvent, getEventById, getEvents } from "./schedule.service.js";
-import { createEventSchema, queryEventsSchema } from "./schedule.schema.js";
+import { createEvent, deleteEvent, getEventById, getEvents, updateEvent } from "./schedule.service.js";
+import { createEventSchema, queryEventsSchema, updateEventSchema } from "./schedule.schema.js";
 import { AppError } from "../../utils/errors.js";
 
 export async function events(req: Request, res: Response): Promise<Response> {
@@ -42,4 +42,18 @@ export async function remove(req: Request, res: Response): Promise<Response> {
     await deleteEvent(req.user!.id, id);
 
     return sendSuccess(res, null, "Successfully deleted the event", 200);
+}
+
+export async function update(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+
+    if (typeof id !== "string") {
+        throw new AppError(400, "BAD_REQUEST", "Invalid id");
+    }
+
+    const payload = updateEventSchema.parse(req.body);
+
+    const event = await updateEvent(req.user!.id, id, payload);
+
+    return sendSuccess(res, event, "Successfully updated the event", 200);
 }

@@ -1,6 +1,6 @@
 import { prisma, Prisma } from "../../config/prisma.js";
 import { AppError } from "../../utils/errors.js";
-import type { CreateEventInput, EventsQueryInput } from "./schedule.schema.js";
+import type { CreateEventInput, EventsQueryInput, UpdateEventInput } from "./schedule.schema.js";
 
 export async function getEvents(userId: string, query: EventsQueryInput) {
     const { startTime, endTime, context } = query;
@@ -72,4 +72,27 @@ export async function deleteEvent(userId: string, eventId: string): Promise<void
     if (count === 0) {
         throw new AppError(404, "TASK_NOT_FOUND", "Task not found");
     }
+}
+
+export async function updateEvent(userId: string, eventId: string, payload: UpdateEventInput) {
+    await getEventById(userId, eventId);
+
+    const updateData: Prisma.EventUpdateInput = {};
+
+    if (payload.title !== undefined) updateData.title = payload.title;
+    if (payload.description !== undefined) updateData.description = payload.description;
+    if (payload.context !== undefined) updateData.context = payload.context;
+    if (payload.startTime !== undefined) updateData.startTime = payload.startTime;
+    if (payload.endTime !== undefined) updateData.endTime = payload.endTime;
+    if (payload.isRecurring !== undefined) updateData.isRecurring = payload.isRecurring;
+    if (payload.recurrence !== undefined) updateData.recurrence = payload.recurrence ?? {};
+    if (payload.location !== undefined) updateData.location = payload.location;
+    if (payload.color !== undefined) updateData.color = payload.color;
+
+    const event = await prisma.event.update({
+        where: { id: eventId },
+        data: updateData
+    });
+
+    return event;
 }
