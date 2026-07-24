@@ -40,7 +40,7 @@ export async function createEvent(userId: string, payload: CreateEventInput) {
             startTime: payload.startTime,
             endTime: payload.endTime,
             isRecurring: payload.isRecurring,
-            recurrence: payload.recurrence ?? {},
+            recurrence: payload.recurrence ?? Prisma.JsonNull,
             location: payload.location ?? null,
             color: payload.color ?? null,
             userId,
@@ -75,7 +75,19 @@ export async function deleteEvent(userId: string, eventId: string): Promise<void
 }
 
 export async function updateEvent(userId: string, eventId: string, payload: UpdateEventInput) {
-    await getEventById(userId, eventId);
+    const existing = await getEventById(userId, eventId);
+
+    const newStart = payload.startTime ?? existing.startTime;
+    const newEnd = payload.endTime ?? existing.endTime;
+    if (newEnd <= newStart) {
+        throw new AppError(400, "INVALID_TIME_RANGE", "endTime must be after startTime");
+    }
+
+    const newIsRecurring = payload.isRecurring ?? existing.isRecurring;
+    const newRecurrence = payload.recurrence !== undefined ? payload.recurrence : existing.recurrence;
+    if (newIsRecurring && !newRecurrence) {
+        throw new AppError(400, "INVALID_RECURRENCE", "recurrence is required when isRecurring is true");
+    }
 
     const updateData: Prisma.EventUpdateInput = {};
 
@@ -84,14 +96,30 @@ export async function updateEvent(userId: string, eventId: string, payload: Upda
     if (payload.context !== undefined) updateData.context = payload.context;
     if (payload.startTime !== undefined) updateData.startTime = payload.startTime;
     if (payload.endTime !== undefined) updateData.endTime = payload.endTime;
-    if (payload.isRecurring !== undefined) updateData.isRecurring = payload.isRecurring;
-    if (payload.recurrence !== undefined) updateData.recurrence = payload.recurrence ?? {};
     if (payload.location !== undefined) updateData.location = payload.location;
     if (payload.color !== undefined) updateData.color = payload.color;
 
-    const event = await prisma.event.update({
+    if (payload.isRecurring !== undefined) {
+        updateData.isRecurring = payload.isRecurring;
+    }
+
+    if (payload.recurrence !== undefined) {
+        updateData.recurrence = payload.recurrence ?? Prisma.JsonNull;
+    } else if (payload.isRecurring === false) {
+        updateData.recurrence = Prisma.JsonNull;
+    }
+
+    const result = await prisma.event.updateMany({
+        where: { id: eventId, userId },
+        data: updateData,
+    });
+
+    if (result.count === 0) {
+        throw new AppError(404, "EVENT_NOT_FOUND", "Event not found");
+    }
+
+    const event = await prisma.event.findUniqueOrThrow({
         where: { id: eventId },
-        data: updateData
     });
 
     return event;

@@ -6,8 +6,8 @@ export const scheduleRoutes = Router();
 
 scheduleRoutes.use(requireAuth);
 
-scheduleRoutes.get('/schedules', events);
-scheduleRoutes.post('/schedules', create);
-scheduleRoutes.get('/schedules/:id', view);
-scheduleRoutes.delete('/schedules/:id', remove);
-scheduleRoutes.patch('/schedules/:id', update);
+scheduleRoutes.get("/", events);
+scheduleRoutes.post("/", create);
+scheduleRoutes.get("/:id", view);
+scheduleRoutes.delete("/:id", remove);
+scheduleRoutes.patch("/:id", update);
