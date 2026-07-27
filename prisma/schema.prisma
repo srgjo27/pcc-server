@@ -23,6 +23,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   tasks         Task[]
+  events        Event[]
 }
 
 enum TaskContext {
@@ -59,6 +60,32 @@ model Task {
   tags        String[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum EventContext {
+  LECTURE
+  WORK
+  BUSINESS
+  PERSONAL
+  GYM
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  context     EventContext
+  startTime   DateTime
+  endTime     DateTime
+  isRecurring Boolean     @default(false)
+  recurrence  Json?
+  location    String?
+  color       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
