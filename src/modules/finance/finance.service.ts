@@ -218,26 +218,31 @@ export async function getFinanceDashboard(userId: string, month: number, year: n
     });
 
     const trendMonths: { month: number; year: number; label: string }[] = [];
-    for (let i = 5; i >= 0; i--) {
-        const d = new Date(year, month - 1 - i, 1);
-        const m = d.getMonth() + 1;
-        const y = d.getFullYear();
+    const isFirstHalf = month <= 6;
+    const startMonth = isFirstHalf ? 1 : 7;
+    const endMonth = isFirstHalf ? 6 : 12;
+
+    for (let m = startMonth; m <= endMonth; m++) {
+        const d = new Date(year, m - 1, 1);
         const label = d.toLocaleString("id-ID", { month: "short", year: "numeric" });
-        trendMonths.push({ month: m, year: y, label });
+        trendMonths.push({ month: m, year: year, label });
     }
 
     const firstTrendMonth = trendMonths[0];
-    if (!firstTrendMonth) {
+    const lastTrendMonth = trendMonths[trendMonths.length - 1];
+    if (!firstTrendMonth || !lastTrendMonth) {
         throw new AppError(500, "INTERNAL_SERVER_ERROR", "Failed to calculate trend range");
     }
 
     const trendStartDate = new Date(firstTrendMonth.year, firstTrendMonth.month - 1, 1);
+    const trendEndDate = new Date(lastTrendMonth.year, lastTrendMonth.month, 0, 23, 59, 59, 999);
+
     const trendTransactions = await prisma.transaction.findMany({
         where: {
             userId,
             date: {
                 gte: trendStartDate,
-                lte: endDate,
+                lte: trendEndDate,
             },
         },
     });
