@@ -8,6 +8,7 @@ import { authRoutes } from "./modules/auth/auth.routes.js";
 import { taskRoutes } from "./modules/tasks/task.routes.js";
 import { scheduleRoutes } from "./modules/schedules/schedule.routes.js";
 import { financeRoutes } from "./modules/finance/finance.routes.js";
+import { notesRoutes } from "./modules/notes/notes.routes.js";
 
 export function createApp(): Application {
     const app = express();
@@ -33,6 +34,7 @@ export function createApp(): Application {
     app.use("/api/task", taskRoutes);
     app.use("/api/schedule", scheduleRoutes);
     app.use("/api/finance", financeRoutes);
+    app.use("/api/notes", notesRoutes);
 
     app.use((req: Request, res: Response) => {
         res.status(404).json({

@@ -25,6 +25,7 @@ model User {
   tasks         Task[]
   events        Event[]
   transactions  Transaction[]
+  notes         Note[]
 }
 
 enum TaskContext {
@@ -59,10 +60,12 @@ model Task {
   dueDate     DateTime?
   dueTime     String?
   tags        String[]
+  noteId      String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note Note? @relation(fields: [noteId], references: [id])
 }
 
 enum EventContext {
@@ -128,4 +131,18 @@ model FinanceBudget {
   year      Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  content   String   // Markdown / rich text (JSON Tiptap)
+  tags      String[]
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
 }
