@@ -27,6 +27,7 @@ model User {
   transactions  Transaction[]
   notes         Note[]
   habits        Habit[]
+  focusSessions FocusSession[]
 }
 
 enum TaskContext {
@@ -180,4 +181,17 @@ model HabitLog {
   habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
  
   @@unique([habitId, date])
+}
+
+model FocusSession {
+  id           String   @id @default(uuid())
+  userId       String
+  taskId       String?
+  durationMins Int      // actual duration (might differ from planned)
+  plannedMins  Int      @default(25)
+  completedAt  DateTime
+  note         String?
+  createdAt    DateTime @default(now())
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
