@@ -6,9 +6,10 @@ export const notesRoutes = Router();
 
 notesRoutes.use(requireAuth);
 
-notesRoutes.get('/notes', listNotes);
-notesRoutes.post('/notes', create);
-notesRoutes.get('/notes/:id', view);
-notesRoutes.put('/notes/:id', update);
-notesRoutes.patch('/notes/:id', update);
-notesRoutes.delete('/notes/:id', remove);
+notesRoutes.get('/', listNotes);
+notesRoutes.post('/', create);
+notesRoutes.get('/:id', view);
+notesRoutes.put('/:id', update);
+notesRoutes.patch('/:id', update);
+notesRoutes.delete('/:id', remove);
+

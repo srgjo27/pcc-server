@@ -33,7 +33,7 @@ export function createApp(): Application {
     })
 
     app.use("/api/auth", authRoutes);
-    app.use("/api/task", taskRoutes);
+    app.use("/api/tasks", taskRoutes);
     app.use("/api/schedule", scheduleRoutes);
     app.use("/api/finance", financeRoutes);
     app.use("/api/notes", notesRoutes);

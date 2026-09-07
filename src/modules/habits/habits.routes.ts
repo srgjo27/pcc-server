@@ -15,13 +15,14 @@ export const habitsRoutes = Router();
 
 habitsRoutes.use(requireAuth);
 
-habitsRoutes.get('/habits/streaks', streakSummary);
+habitsRoutes.get('/streaks', streakSummary);
 
-habitsRoutes.get('/habits', listHabits);
-habitsRoutes.post('/habits', create);
-habitsRoutes.patch('/habits/:id', update);
-habitsRoutes.delete('/habits/:id', remove);
+habitsRoutes.get('/', listHabits);
+habitsRoutes.post('/', create);
+habitsRoutes.patch('/:id', update);
+habitsRoutes.delete('/:id', remove);
 
-habitsRoutes.get('/habits/:id/logs', listLogs);
-habitsRoutes.post('/habits/:id/logs', checkIn);
-habitsRoutes.delete('/habits/:id/logs/:date', removeCheckIn);
+habitsRoutes.get('/:id/logs', listLogs);
+habitsRoutes.post('/:id/logs', checkIn);
+habitsRoutes.delete('/:id/logs/:date', removeCheckIn);
+
