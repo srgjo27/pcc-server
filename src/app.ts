@@ -10,6 +10,7 @@ import { scheduleRoutes } from "./modules/schedules/schedule.routes.js";
 import { financeRoutes } from "./modules/finance/finance.routes.js";
 import { notesRoutes } from "./modules/notes/notes.routes.js";
 import { habitsRoutes } from "./modules/habits/habits.routes.js";
+import { focusRoutes } from "./modules/focus/focus.routes.js";
 
 export function createApp(): Application {
     const app = express();
@@ -32,11 +33,13 @@ export function createApp(): Application {
     })
 
     app.use("/api/auth", authRoutes);
-    app.use("/api/task", taskRoutes);
+    app.use("/api/tasks", taskRoutes);
     app.use("/api/schedule", scheduleRoutes);
     app.use("/api/finance", financeRoutes);
     app.use("/api/notes", notesRoutes);
     app.use("/api/habits", habitsRoutes);
+    app.use("/api/focus", focusRoutes);
+
 
     app.use((req: Request, res: Response) => {
         res.status(404).json({
