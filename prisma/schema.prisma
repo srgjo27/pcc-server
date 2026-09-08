@@ -24,6 +24,10 @@ model User {
 
   tasks         Task[]
   events        Event[]
+  transactions  Transaction[]
+  notes         Note[]
+  habits        Habit[]
+  focusSessions FocusSession[]
 }
 
 enum TaskContext {
@@ -58,10 +62,12 @@ model Task {
   dueDate     DateTime?
   dueTime     String?
   tags        String[]
+  noteId      String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note Note? @relation(fields: [noteId], references: [id])
 }
 
 enum EventContext {
@@ -87,5 +93,105 @@ model Event {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum FinanceContext {
+  GAJI
+  USAHA
+  FREELANCE
+  INVESTASI
+  PERSONAL
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  userId      String
+  type        TransactionType
+  context     FinanceContext
+  amount      Decimal         @db.Decimal(15, 2)
+  category    String
+  description String?
+  date        DateTime
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FinanceBudget {
+  id        String   @id @default(uuid())
+  userId    String
+  category  String
+  amount    Decimal  @db.Decimal(15, 2)
+  month     Int      
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  content   String   // Markdown / rich text (JSON Tiptap)
+  tags      String[]
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
+}
+
+enum HabitFrequency {
+  DAILY
+  WEEKLY
+}
+
+model Habit {
+  id          String        @id @default(uuid())
+  userId      String
+  name        String
+  icon        String?
+  frequency   HabitFrequency @default(DAILY)
+  targetDays  Int[]         // [1,2,3,4,5] = Mon-Fri (0=Sun)
+  color       String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+ 
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs  HabitLog[]
+}
+
+model HabitLog {
+  id        String   @id @default(uuid())
+  habitId   String
+  date      DateTime @db.Date
+  completed Boolean  @default(false)
+  note      String?
+  createdAt DateTime @default(now())
+ 
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+ 
+  @@unique([habitId, date])
+}
+
+model FocusSession {
+  id           String   @id @default(uuid())
+  userId       String
+  taskId       String?
+  durationMins Int      // actual duration (might differ from planned)
+  plannedMins  Int      @default(25)
+  completedAt  DateTime
+  note         String?
+  createdAt    DateTime @default(now())
+ 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

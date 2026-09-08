@@ -6,7 +6,7 @@ export const taskRoutes = Router();
 
 taskRoutes.use(requireAuth);
 
-taskRoutes.get('/tasks', tasks);
-taskRoutes.post('/tasks', create);
-taskRoutes.get('/tasks/:id', view);
-taskRoutes.delete('/tasks/:id', remove);
+taskRoutes.get('/', tasks);
+taskRoutes.post('/', create);
+taskRoutes.get('/:id', view);
+taskRoutes.delete('/:id', remove);
