@@ -11,6 +11,7 @@ import { financeRoutes } from "./modules/finance/finance.routes.js";
 import { notesRoutes } from "./modules/notes/notes.routes.js";
 import { habitsRoutes } from "./modules/habits/habits.routes.js";
 import { focusRoutes } from "./modules/focus/focus.routes.js";
+import { dashboardRoutes } from "./modules/dashboard/dashboard.routes.js";
 
 export function createApp(): Application {
     const app = express();
@@ -33,6 +34,7 @@ export function createApp(): Application {
     })
 
     app.use("/api/auth", authRoutes);
+    app.use("/api/dashboard", dashboardRoutes);
     app.use("/api/tasks", taskRoutes);
     app.use("/api/schedule", scheduleRoutes);
     app.use("/api/finance", financeRoutes);
